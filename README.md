@@ -2,6 +2,7 @@
 
 ## Clone Tensor Flow
 git clone https://github.com/tensorflow/tensorflow.git
+
 cd tensorflow/models/research/slim
 
 ## Generate Resnets model architecture
@@ -24,9 +25,11 @@ bazel run tensorflow/tools/graph_transforms:summarize_graph -- --in_graph=/tmp/m
 
 ## Optimize for inference if needed
 cd tensorflow-for-poets-2
+
 python -m tensorflow.python.tools.optimize_for_inference --input=\tmp\models\resnet_v2_50.pb --output=\tmp\models\optimized_resnet_v2_50.pb --input_names="input" --output_names="resnet_v2_50/predictions/Reshape_1"
 
 
 ## Quantize if needed
 cd tensorflow-for-poets-2
+
 python scripts/quantize_graph.py --input=/tmp/models/optimized_resnet_v2_50.pb --output=/tmp/models/quantized_resnet_v2_50.pb --output_node_names=resnet_v2_50/predictions/Reshape_1 --mode=eightbit
