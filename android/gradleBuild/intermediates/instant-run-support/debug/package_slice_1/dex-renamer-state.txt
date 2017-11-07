@@ -1,0 +1,4 @@
+#Fri Nov 03 21:08:12 CDT 2017
+base.0=/Users/parshar2/Documents/AndroidStudioProjects/tensorflow/tensorflow/examples/android/gradleBuild/intermediates/transforms/dex/debug/folders/1000/5/slice_1
+renamed.0=classes.dex
+file.0=/Users/parshar2/Documents/AndroidStudioProjects/tensorflow/tensorflow/examples/android/gradleBuild/intermediates/transforms/dex/debug/folders/1000/5/slice_1/classes.dex

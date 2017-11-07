@@ -1,0 +1,7 @@
+#Sun Nov 05 01:27:48 CDT 2017
+base.0=/Users/parshar2/Documents/AndroidStudioProjects/tensorflow/tensorflow/examples/android/gradleBuild/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_dbdb2ffd8adcf9977fa8839e8b24a30349b3c66d
+renamed.1=classes.dex
+renamed.0=classes2.dex
+file.1=/Users/parshar2/Documents/AndroidStudioProjects/tensorflow/tensorflow/examples/android/gradleBuild/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_1e7241f713f279e55ec38d41834ff66898aba58e/classes.dex
+base.1=/Users/parshar2/Documents/AndroidStudioProjects/tensorflow/tensorflow/examples/android/gradleBuild/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_1e7241f713f279e55ec38d41834ff66898aba58e
+file.0=/Users/parshar2/Documents/AndroidStudioProjects/tensorflow/tensorflow/examples/android/gradleBuild/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_dbdb2ffd8adcf9977fa8839e8b24a30349b3c66d/classes.dex
