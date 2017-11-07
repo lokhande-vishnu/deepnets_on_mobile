@@ -1,4 +1,6 @@
 # deepnets_on_mobile
+CS744 Big Data Systems Course Project.
+Please find the report here https://docs.google.com/document/d/1ob_Nf1P4cxuNwKlOEvdprDS3ZNa7RPhuipQqGuXSm64/edit?usp=sharing
 
 ## Clone Tensor Flow
 git clone https://github.com/tensorflow/tensorflow.git
