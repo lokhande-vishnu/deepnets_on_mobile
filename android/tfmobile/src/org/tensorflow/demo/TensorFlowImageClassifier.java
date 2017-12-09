@@ -44,6 +44,8 @@ public class TensorFlowImageClassifier implements Classifier {
   private int inputSize;
   private int imageMean;
   private float imageStd;
+  private String backpropInput;
+  private String backpropOutput;
 
   // Pre-allocated buffers.
   private Vector<String> labels = new Vector<String>();
@@ -51,10 +53,12 @@ public class TensorFlowImageClassifier implements Classifier {
   private float[] floatValues;
   private float[] outputs;
   private String[] outputNames;
+  private String[] backpropOutputs;
 
   private boolean logStats = false;
 
   private TensorFlowInferenceInterface inferenceInterface;
+  private TensorFlowInferenceInterface backpropInterface;
 
   private TensorFlowImageClassifier() {}
 
@@ -79,7 +83,10 @@ public class TensorFlowImageClassifier implements Classifier {
       int imageMean,
       float imageStd,
       String inputName,
-      String outputName) {
+      String outputName,
+      String backpropFilename,
+      String backpropInput,
+      String backpropOutput) {
     TensorFlowImageClassifier c = new TensorFlowImageClassifier();
     c.inputName = inputName;
     c.outputName = outputName;
@@ -119,6 +126,12 @@ public class TensorFlowImageClassifier implements Classifier {
     c.intValues = new int[inputSize * inputSize];
     c.floatValues = new float[inputSize * inputSize * 3];
     c.outputs = new float[numClasses];
+
+    // Backprop variables
+    c.backpropInput = backpropInput;
+    c.backpropOutput = backpropOutput;
+    c.backpropInterface = new TensorFlowInferenceInterface(assetManager, backpropFilename);
+    c.backpropOutputs = new String[] {backpropOutput};
 
     return c;
   }
@@ -179,6 +192,27 @@ public class TensorFlowImageClassifier implements Classifier {
       recognitions.add(pq.poll());
     }
     Trace.endSection(); // "recognizeImage"
+
+
+    // Backward Propagation
+
+    // Feed data
+
+    Trace.beginSection("feed");
+    backpropInterface.feed(backpropInput, outputs, 5);
+    Trace.endSection();
+
+
+    // Run backprop
+    Trace.beginSection("run");
+    backpropInterface.run(backpropOutputs, logStats);
+    Trace.endSection();
+
+    int sum = 0;
+    for (int i = 0; i < 100000; ++i) {
+      sum += i;
+    }
+
     return recognitions;
   }
 

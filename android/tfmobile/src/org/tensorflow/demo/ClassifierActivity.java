@@ -70,11 +70,17 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
   private static final int INPUT_SIZE = 224;
   private static final int IMAGE_MEAN = 128;
   private static final float IMAGE_STD = 128.0f;
+  // private static final String INPUT_NAME = "input";
+  // private static final String OUTPUT_NAME = "MobilenetV1/Predictions/Softmax";
   private static final String INPUT_NAME = "input";
-  private static final String OUTPUT_NAME = "MobilenetV1/Predictions/Softmax";
+  private static final String OUTPUT_NAME = "final_result";
+  private static final String Backprop_Input = "output";
+  private static final String Backprop_Output = "input";
+
 
   private static final String MODEL_FILE = "file:///android_asset/graph.pb";
   private static final String LABEL_FILE = "file:///android_asset/labels.txt";
+  private static final String BACKPROP_FILE = "file:///android_asset/nn_backward.pb";
 
   private static final boolean SAVE_PREVIEW_BITMAP = false;
 
@@ -135,7 +141,10 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
             IMAGE_MEAN,
             IMAGE_STD,
             INPUT_NAME,
-            OUTPUT_NAME);
+            OUTPUT_NAME,
+            BACKPROP_FILE,
+            Backprop_Input,
+            Backprop_Output);
 
     resultsView = (ResultsView) findViewById(R.id.results);
     previewWidth = size.getWidth();
