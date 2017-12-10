@@ -57,6 +57,9 @@ public class TensorFlowImageClassifier implements Classifier {
     private String outputfc;
     private float[] outputfc_val;
     private float[] weight_new_val;
+    private float[] weight_var;
+    private float[] bias_var;
+    private float[] toutput_var;
     private String true_output;
     private String weight_new;
     private String[] fc_outputs;
@@ -75,6 +78,18 @@ public class TensorFlowImageClassifier implements Classifier {
     private TensorFlowInferenceInterface fcInterface;
 
     private TensorFlowImageClassifier() {
+        weight_var = new float[1001*5];
+        for (int i = 0; i < weight_var.length; i++) {
+            weight_var[i] = (float) Math.random();
+        }
+        bias_var = new float[5];
+        for (int i = 0; i < bias_var.length; i++) {
+            bias_var[i] = (float) Math.random();
+        }
+        toutput_var = new float[]{0,0,1,0,0};
+        //for (int i = 0; i < toutput_var.length; i++) {
+        //    toutput_var[i] = (float) Math.random();
+        //}
     }
 
     /**
@@ -138,7 +153,7 @@ public class TensorFlowImageClassifier implements Classifier {
         c.outputNames = new String[]{outputName};
         c.intValues = new int[inputSize * inputSize];
         c.floatValues = new float[inputSize * inputSize * 3];
-        c.outputs = new float[numClasses];
+        c.outputs = new float[1001];
 
         // FC variables
         c.inputfc = "inputfc";
@@ -148,9 +163,24 @@ public class TensorFlowImageClassifier implements Classifier {
         c.outputfc_val = new float[numClasses];
         c.true_output = "true_output";
         c.weight_new = "weight_new";
-        c.weight_new_val = new float[10 * numClasses];
+        c.weight_new_val = new float[1001 * numClasses];
         c.fc_outputs = new String[]{"outputfc", "weight_new"};
         c.fcInterface = new TensorFlowInferenceInterface(assetManager, fc_filename);
+
+        /*
+        c.weight_var = new float[1001*5];
+        for (int i = 0; i < c.weight_var.length; i++) {
+            c.weight_var[i] = (float) Math.random();
+        }
+        c.bias_var = new float[5];
+        for (int i = 0; i < c.bias_var.length; i++) {
+            c.bias_var[i] = (float) Math.random();
+        }
+        c.toutput_var = new float[5];
+        for (int i = 0; i < c.toutput_var.length; i++) {
+            c.toutput_var[i] = (float) Math.random();
+        }
+        */
 
         return c;
     }
@@ -187,59 +217,25 @@ public class TensorFlowImageClassifier implements Classifier {
         inferenceInterface.fetch(outputName, outputs);
         Trace.endSection();
 
-        // Find the best classifications.
-        PriorityQueue<Recognition> pq =
-                new PriorityQueue<Recognition>(
-                        3,
-                        new Comparator<Recognition>() {
-                            @Override
-                            public int compare(Recognition lhs, Recognition rhs) {
-                                // Intentionally reversed to put high confidence at the head of the queue.
-                                return Float.compare(rhs.getConfidence(), lhs.getConfidence());
-                            }
-                        });
-        for (int i = 0; i < outputs.length; ++i) {
-            if (outputs[i] > THRESHOLD) {
-                pq.add(
-                        new Recognition(
-                                "" + i, labels.size() > i ? labels.get(i) : "unknown", outputs[i], null));
-            }
-        }
-        final ArrayList<Recognition> recognitions = new ArrayList<Recognition>();
-        int recognitionsSize = Math.min(pq.size(), MAX_RESULTS);
-        for (int i = 0; i < recognitionsSize; ++i) {
-            recognitions.add(pq.poll());
-        }
-        Trace.endSection(); // "recognizeImage"
+
 
 
         // Fully connected layer
-
+        /*
         float[] inputfc_var = new float[10];
         for (int i = 0; i < inputfc_var.length; i++) {
             inputfc_var[i] = (float) Math.random();
-        }
-        float[] weight_var = new float[50];
-        for (int i = 0; i < weight_var.length; i++) {
-            weight_var[i] = (float) Math.random();
-        }
-        float[] bias_var = new float[5];
-        for (int i = 0; i < bias_var.length; i++) {
-            bias_var[i] = (float) Math.random();
-        }
-        float[] toutput_var = new float[5];
-        for (int i = 0; i < toutput_var.length; i++) {
-            toutput_var[i] = (float) Math.random();
-        }
+        }*/
+
 
         // Feed data
 
         Trace.beginSection("feed");
-        fcInterface.feed(inputfc, inputfc_var, 1, 10);
+        fcInterface.feed(inputfc, outputs, 1, 1001);
         Trace.endSection();
 
         Trace.beginSection("feed");
-        fcInterface.feed(weight, weight_var, 10, 5);
+        fcInterface.feed(weight, weight_var, 1001, 5);
         Trace.endSection();
 
         Trace.beginSection("feed");
@@ -261,18 +257,34 @@ public class TensorFlowImageClassifier implements Classifier {
         Trace.endSection();
 
         Trace.beginSection("fetch");
-        fcInterface.fetch(weight_new, weight_new_val);
+        fcInterface.fetch(weight_new, weight_var);
         Trace.endSection();
 
 
-    /*
-
-    // Run backprop
-    Trace.beginSection("run");
-    backpropInterface.run(backpropOutputs, logStats);
-    Trace.endSection();
-    */
-
+        // Find the best classifications.
+        PriorityQueue<Recognition> pq =
+                new PriorityQueue<Recognition>(
+                        3,
+                        new Comparator<Recognition>() {
+                            @Override
+                            public int compare(Recognition lhs, Recognition rhs) {
+                                // Intentionally reversed to put high confidence at the head of the queue.
+                                return Float.compare(rhs.getConfidence(), lhs.getConfidence());
+                            }
+                        });
+        for (int i = 0; i < outputfc_val.length; ++i) {
+            if (outputfc_val[i] > THRESHOLD) {
+                pq.add(
+                        new Recognition(
+                                "" + i, labels.size() > i ? labels.get(i) : "unknown", outputfc_val[i], null));
+            }
+        }
+        final ArrayList<Recognition> recognitions = new ArrayList<Recognition>();
+        int recognitionsSize = Math.min(pq.size(), MAX_RESULTS);
+        for (int i = 0; i < recognitionsSize; ++i) {
+            recognitions.add(pq.poll());
+        }
+        Trace.endSection(); // "recognizeImage"
 
         return recognitions;
     }

@@ -11,8 +11,8 @@ def save_graph_to_file(sess, graph, graph_file_name):
     return
 
 def main():
-    input = tf.placeholder(tf.float32, shape=[1,10], name='inputfc') # input
-    weight = tf.placeholder(tf.float32, shape=[10,5], name='weight') # weight
+    input = tf.placeholder(tf.float32, shape=[1,1001], name='inputfc') # input
+    weight = tf.placeholder(tf.float32, shape=[1001,5], name='weight') # weight
     bias = tf.placeholder(tf.float32, shape=[5], name='bias') # bias
     output = tf.nn.softmax(tf.matmul(input, weight) + bias, name='outputfc') # activation / output
 
