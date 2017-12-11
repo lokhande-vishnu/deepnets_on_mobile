@@ -167,26 +167,11 @@ public class TensorFlowImageClassifier implements Classifier {
         c.fc_outputs = new String[]{"outputfc", "weight_new"};
         c.fcInterface = new TensorFlowInferenceInterface(assetManager, fc_filename);
 
-        /*
-        c.weight_var = new float[1001*5];
-        for (int i = 0; i < c.weight_var.length; i++) {
-            c.weight_var[i] = (float) Math.random();
-        }
-        c.bias_var = new float[5];
-        for (int i = 0; i < c.bias_var.length; i++) {
-            c.bias_var[i] = (float) Math.random();
-        }
-        c.toutput_var = new float[5];
-        for (int i = 0; i < c.toutput_var.length; i++) {
-            c.toutput_var[i] = (float) Math.random();
-        }
-        */
-
         return c;
     }
 
     @Override
-    public List<Recognition> recognizeImage(final Bitmap bitmap) {
+    public List<Recognition> recognizeImage(final Bitmap bitmap, float[] true_output) {
         // Log this method so that it can be analyzed with systrace.
         Trace.beginSection("recognizeImage");
 
@@ -216,17 +201,6 @@ public class TensorFlowImageClassifier implements Classifier {
         Trace.beginSection("fetch");
         inferenceInterface.fetch(outputName, outputs);
         Trace.endSection();
-
-
-
-
-        // Fully connected layer
-        /*
-        float[] inputfc_var = new float[10];
-        for (int i = 0; i < inputfc_var.length; i++) {
-            inputfc_var[i] = (float) Math.random();
-        }*/
-
 
         // Feed data
 

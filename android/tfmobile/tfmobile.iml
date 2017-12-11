@@ -105,5 +105,7 @@
     <orderEntry type="jdk" jdkName="Android API 25 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="org.tensorflow:tensorflow-android-1.2.0-preview" level="project" />
+    <orderEntry type="library" name="com.android.support.constraint:constraint-layout-1.1.0-beta3" level="project" />
+    <orderEntry type="library" name="com.android.support.constraint:constraint-layout-solver:1.1.0-beta3@jar" level="project" />
   </component>
 </module>
