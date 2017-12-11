@@ -26,6 +26,8 @@ public interface Classifier {
   /**
    * An immutable result returned by a Classifier describing what was recognized.
    */
+
+
   public class Recognition {
     /**
      * A unique identifier for what has been recognized. Specific to the class, not the instance of
@@ -96,8 +98,25 @@ public interface Classifier {
       return resultString.trim();
     }
   }
+  public class MyResult {
+    private final List<Recognition> first;
+    private final float second;
 
-  List<Recognition> recognizeImage(Bitmap bitmap);
+    public MyResult(List<Recognition> first, float second) {
+      this.first = first;
+      this.second = second;
+    }
+
+    public List<Recognition> getFirst(){
+      return first;
+    }
+
+    public float getSecond() {
+      return second;
+    }
+  }
+
+  MyResult recognizeImage(Bitmap bitmap, float[] toutput_var);
 
   void enableStatLogging(final boolean debug);
   

@@ -34,7 +34,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/MaterialTheme">
-        <!--<activity
+<!--        <activity
             android:name=".ClassifierActivity"
             android:label="@string/activity_name_classification"
             android:screenOrientation="portrait">

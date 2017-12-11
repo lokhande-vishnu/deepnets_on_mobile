@@ -93,16 +93,16 @@ public class TrainingActivity extends Activity {
         setContentView(R.layout.activity_training);
         Log.d(TrainingActivity.class.getSimpleName(), "Test Log");
         classifier = TensorFlowImageClassifier.create(
-                        getAssets(),
-                        MODEL_FILE,
-                        LABEL_FILE,
-                        INPUT_SIZE,
-                        IMAGE_MEAN,
-                        IMAGE_STD,
-                        INPUT_NAME,
-                        OUTPUT_NAME,
-                        FC_FILE);
-        File dir = new File(Environment.getExternalStorageDirectory()+"/images/");
+                getAssets(),
+                MODEL_FILE,
+                LABEL_FILE,
+                INPUT_SIZE,
+                IMAGE_MEAN,
+                IMAGE_STD,
+                INPUT_NAME,
+                OUTPUT_NAME,
+                FC_FILE);
+        File dir = new File(Environment.getExternalStorageDirectory() + "/images/");
         new Task().execute(dir);
 
 
@@ -120,43 +120,48 @@ public class TrainingActivity extends Activity {
         // This is run in a background thread
         @Override
         protected String doInBackground(File... params) {
-            File dir = params[0];
-            // get the string from params, which is an array
-            File[] directoryListing = dir.listFiles();
-            if (directoryListing != null) {
-                for (File child : directoryListing) {
-                    if (child.isDirectory()) {
-                        String childName = child.getName();
-                        System.out.println("Directory: " + childName);
-                        File[] imageLists = child.listFiles();
-                        float[] true_output;
-                        if (childName.equalsIgnoreCase("daisy")) {
-                            true_output = new float[]{1,0,0,0,0};
-                        } else if (childName.equalsIgnoreCase("dandelion")) {
-                            true_output = new float[]{0,1,0,0,0};
-                        } else if (childName.equalsIgnoreCase("roses")) {
-                            true_output = new float[]{0,0,1,0,0};
-                        } else if (childName.equalsIgnoreCase("sunflowers")) {
-                            true_output = new float[]{0,0,0,1,0};
-                        } else {
-                            true_output = new float[]{0,0,0,0,1};
-                        }
+            int totEpochs = 10;
+            for (int ep = 0; ep < totEpochs; ep++) {
+                File dir = params[0];
+                // get the string from params, which is an array
+                File[] directoryListing = dir.listFiles();
+                if (directoryListing != null) {
+                    for (File child : directoryListing) {
+                        if (child.isDirectory()) {
+                            String childName = child.getName();
+                            System.out.println("Directory: " + childName);
+                            File[] imageLists = child.listFiles();
+                            float[] toutput_var;
+                            if (childName.equalsIgnoreCase("daisy")) {
+                                toutput_var = new float[]{1, 0, 0, 0, 0};
+                            } else if (childName.equalsIgnoreCase("dandelion")) {
+                                toutput_var = new float[]{0, 1, 0, 0, 0};
+                            } else if (childName.equalsIgnoreCase("roses")) {
+                                toutput_var = new float[]{0, 0, 1, 0, 0};
+                            } else if (childName.equalsIgnoreCase("sunflowers")) {
+                                toutput_var = new float[]{0, 0, 0, 1, 0};
+                            } else {
+                                toutput_var = new float[]{0, 0, 0, 0, 1};
+                            }
 
-                        for (File image : imageLists) {
-                            String filePath = image.getPath();
-                            Bitmap bitmap = BitmapFactory.decodeFile(filePath);
-                            Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
-                            final List<Classifier.Recognition> results = classifier.recognizeImage(resizedBitmap, true_output);
-                            Log.d(TrainingActivity.class.getSimpleName(), "classification done");
+                            for (File image : imageLists) {
+                                String filePath = image.getPath();
+                                Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+                                Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
+                                final Classifier.MyResult myresult = classifier.recognizeImage(resizedBitmap, toutput_var);
+                                final List<Classifier.Recognition> results = myresult.getFirst();
+                                final float error = myresult.getSecond();
+                                Log.d(TrainingActivity.class.getSimpleName(), "classification done, error=" + error);
+                            }
                         }
                     }
+                } else {
+                    // Handle the case where dir is not really a directory.
+                    // Checking dir.isDirectory() above would not be sufficient
+                    // to avoid race conditions with another process that deletes
+                    // directories.
+                    System.out.println("Something wrong");
                 }
-            } else {
-                // Handle the case where dir is not really a directory.
-                // Checking dir.isDirectory() above would not be sufficient
-                // to avoid race conditions with another process that deletes
-                // directories.
-                System.out.println("Something wrong");
             }
 
             return "this string is passed to onPostExecute";

@@ -28,11 +28,13 @@ import android.media.ImageReader;
 import android.media.ImageReader.OnImageAvailableListener;
 import android.os.SystemClock;
 import android.os.Trace;
+import android.util.Log;
 import android.util.Size;
 import android.util.TypedValue;
 import android.view.Display;
 import java.util.List;
 import java.util.Vector;
+import java.util.Random;
 import org.tensorflow.demo.OverlayView.DrawCallback;
 import org.tensorflow.demo.env.BorderedText;
 import org.tensorflow.demo.env.ImageUtils;
@@ -236,9 +238,28 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
         new Runnable() {
           @Override
           public void run() {
+            float[] toutput_var;
+            Random r = new Random();
+            int num = r.nextInt(5 );
+            if (num == 0) {
+              toutput_var = new float[]{1,0,0,0,0};
+            } else if (num == 1) {
+              toutput_var = new float[]{0,1,0,0,0};
+            } else if (num == 2) {
+              toutput_var = new float[]{0,0,1,0,0};
+            } else if (num == 3) {
+              toutput_var = new float[]{0,0,0,1,0};
+            } else {
+              toutput_var = new float[]{0,0,0,0,1};
+            }
+
+
             final long startTime = SystemClock.uptimeMillis();
-            final List<Classifier.Recognition> results = classifier.recognizeImage(croppedBitmap);
+            final Classifier.MyResult myresult = classifier.recognizeImage(croppedBitmap, toutput_var);
+            final List<Classifier.Recognition> results = myresult.getFirst();
+            final float error = myresult.getSecond();
             lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
+            Log.d(ClassifierActivity.class.getSimpleName(), "output_var: " + toutput_var + ", error:" + error);
 
             cropCopyBitmap = Bitmap.createBitmap(croppedBitmap);
             resultsView.setResults(results);

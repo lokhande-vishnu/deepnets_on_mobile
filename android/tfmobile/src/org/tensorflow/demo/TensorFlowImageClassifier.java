@@ -55,11 +55,13 @@ public class TensorFlowImageClassifier implements Classifier {
     private String weight;
     private String bias;
     private String outputfc;
+    private String error;
+    private float[] error_val;
     private float[] outputfc_val;
     private float[] weight_new_val;
     private float[] weight_var;
     private float[] bias_var;
-    private float[] toutput_var;
+    // private float[] toutput_var;
     private String true_output;
     private String weight_new;
     private String[] fc_outputs;
@@ -82,11 +84,11 @@ public class TensorFlowImageClassifier implements Classifier {
         for (int i = 0; i < weight_var.length; i++) {
             weight_var[i] = (float) Math.random();
         }
-        bias_var = new float[5];
-        for (int i = 0; i < bias_var.length; i++) {
-            bias_var[i] = (float) Math.random();
-        }
-        toutput_var = new float[]{0,0,1,0,0};
+        bias_var = new float[]{0,0,0,0,0};
+        //for (int i = 0; i < bias_var.length; i++) {
+        //    bias_var[i] = (float) Math.random();
+        //}
+        // toutput_var = new float[]{0,0,1,0,0};
         //for (int i = 0; i < toutput_var.length; i++) {
         //    toutput_var[i] = (float) Math.random();
         //}
@@ -160,18 +162,20 @@ public class TensorFlowImageClassifier implements Classifier {
         c.weight = "weight";
         c.bias = "bias";
         c.outputfc = "outputfc";
+        c.error = "error";
         c.outputfc_val = new float[numClasses];
+        c.error_val = new float[1];
         c.true_output = "true_output";
         c.weight_new = "weight_new";
         c.weight_new_val = new float[1001 * numClasses];
-        c.fc_outputs = new String[]{"outputfc", "weight_new"};
+        c.fc_outputs = new String[]{"outputfc", "weight_new", "error"};
         c.fcInterface = new TensorFlowInferenceInterface(assetManager, fc_filename);
 
         return c;
     }
 
     @Override
-    public List<Recognition> recognizeImage(final Bitmap bitmap, float[] true_output) {
+    public MyResult recognizeImage(final Bitmap bitmap, float[] toutput_var) {
         // Log this method so that it can be analyzed with systrace.
         Trace.beginSection("recognizeImage");
 
@@ -234,6 +238,9 @@ public class TensorFlowImageClassifier implements Classifier {
         fcInterface.fetch(weight_new, weight_var);
         Trace.endSection();
 
+        Trace.beginSection("fetch");
+        fcInterface.fetch(error, error_val);
+        Trace.endSection();
 
         // Find the best classifications.
         PriorityQueue<Recognition> pq =
@@ -260,7 +267,7 @@ public class TensorFlowImageClassifier implements Classifier {
         }
         Trace.endSection(); // "recognizeImage"
 
-        return recognitions;
+        return new MyResult(recognitions, error_val[0]);
     }
 
     @Override

@@ -50,6 +50,7 @@ if __name__ == "__main__":
   output_opt = graph.get_operation_by_name('import/outputfc');
   toutput_opt = graph.get_operation_by_name('import/true_output');
   nweight_opt = graph.get_operation_by_name('import/weight_new');
+  error_opt = graph.get_operation_by_name('import/error');
   
   input_var = np.random.rand(1,1001)
   weight_var = np.random.rand(1001,5)
@@ -58,7 +59,7 @@ if __name__ == "__main__":
       
   with tf.Session(graph=graph) as sess:
     start = time.time()
-    out, nwei = sess.run([output_opt.outputs[0], nweight_opt.outputs[0]],
+    out, nwei, err = sess.run([output_opt.outputs[0], nweight_opt.outputs[0], error_opt.outputs[0]],
                       {input_opt.outputs[0]: input_var,
                        weight_opt.outputs[0]: weight_var,
                        bias_opt.outputs[0]: bias_var,
@@ -66,6 +67,6 @@ if __name__ == "__main__":
     end=time.time()
 
   print('\nEvaluation time (1-image): {:.3f}s\n'.format(end-start))
-  print('out', len(out), len(out[0]))
+  print('out', out)
   print('nwei', len(nwei), len(nwei[0]))
-  
+  print('err', err)
