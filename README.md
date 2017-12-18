@@ -18,3 +18,4 @@ This repo contains simplified and trimmed down version of tensorflow's example i
 
 The `scripts` directory contains helpers for the codelab. Some of these come from the main TensorFlow repository, and are included here so you can use them without also downloading the main TensorFlow repo (they are not part of the TensorFlow `pip` installation).
 
+Please find the report here https://docs.google.com/document/d/1ob_Nf1P4cxuNwKlOEvdprDS3ZNa7RPhuipQqGuXSm64/edit
