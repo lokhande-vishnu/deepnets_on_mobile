@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.util.Log;
 import android.util.Size;
 
@@ -148,10 +149,12 @@ public class TrainingActivity extends Activity {
                                 String filePath = image.getPath();
                                 Bitmap bitmap = BitmapFactory.decodeFile(filePath);
                                 Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
+                                final long startTime = SystemClock.uptimeMillis();
                                 final Classifier.MyResult myresult = classifier.recognizeImage(resizedBitmap, toutput_var);
                                 final List<Classifier.Recognition> results = myresult.getFirst();
                                 final float error = myresult.getSecond();
-                                Log.d(TrainingActivity.class.getSimpleName(), "classification done, error=" + error);
+                                lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
+                                Log.d(TrainingActivity.class.getSimpleName(), "time=" + lastProcessingTimeMs);
                             }
                         }
                     }
