@@ -28,11 +28,13 @@ import android.media.ImageReader;
 import android.media.ImageReader.OnImageAvailableListener;
 import android.os.SystemClock;
 import android.os.Trace;
+import android.util.Log;
 import android.util.Size;
 import android.util.TypedValue;
 import android.view.Display;
 import java.util.List;
 import java.util.Vector;
+import java.util.Random;
 import org.tensorflow.demo.OverlayView.DrawCallback;
 import org.tensorflow.demo.env.BorderedText;
 import org.tensorflow.demo.env.ImageUtils;
@@ -70,11 +72,14 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
   private static final int INPUT_SIZE = 224;
   private static final int IMAGE_MEAN = 128;
   private static final float IMAGE_STD = 128.0f;
+  // private static final String INPUT_NAME = "input";
+  // private static final String OUTPUT_NAME = "MobilenetV1/Predictions/Softmax";
   private static final String INPUT_NAME = "input";
-  private static final String OUTPUT_NAME = "MobilenetV1/Predictions/Softmax";
+  private static final String OUTPUT_NAME = "MobilenetV1/Predictions/Reshape";
 
-  private static final String MODEL_FILE = "file:///android_asset/graph.pb";
+  private static final String MODEL_FILE = "file:///android_asset/store_graph.pb";
   private static final String LABEL_FILE = "file:///android_asset/labels.txt";
+  private static final String FC_FILE = "file:///android_asset/update_fc.pb";
 
   private static final boolean SAVE_PREVIEW_BITMAP = false;
 
@@ -135,7 +140,8 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
             IMAGE_MEAN,
             IMAGE_STD,
             INPUT_NAME,
-            OUTPUT_NAME);
+            OUTPUT_NAME,
+            FC_FILE);
 
     resultsView = (ResultsView) findViewById(R.id.results);
     previewWidth = size.getWidth();
@@ -232,9 +238,28 @@ public class ClassifierActivity extends CameraActivity implements OnImageAvailab
         new Runnable() {
           @Override
           public void run() {
+            float[] toutput_var;
+            Random r = new Random();
+            int num = r.nextInt(5 );
+            if (num == 0) {
+              toutput_var = new float[]{1,0,0,0,0};
+            } else if (num == 1) {
+              toutput_var = new float[]{0,1,0,0,0};
+            } else if (num == 2) {
+              toutput_var = new float[]{0,0,1,0,0};
+            } else if (num == 3) {
+              toutput_var = new float[]{0,0,0,1,0};
+            } else {
+              toutput_var = new float[]{0,0,0,0,1};
+            }
+
+
             final long startTime = SystemClock.uptimeMillis();
-            final List<Classifier.Recognition> results = classifier.recognizeImage(croppedBitmap);
+            final Classifier.MyResult myresult = classifier.recognizeImage(croppedBitmap, toutput_var);
+            final List<Classifier.Recognition> results = myresult.getFirst();
+            final float error = myresult.getSecond();
             lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
+            Log.d(ClassifierActivity.class.getSimpleName(), "output_var: " + toutput_var + ", error:" + error);
 
             cropCopyBitmap = Bitmap.createBitmap(croppedBitmap);
             resultsView.setResults(results);

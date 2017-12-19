@@ -112,6 +112,7 @@ from tensorflow.python.framework import graph_util
 from tensorflow.python.framework import tensor_shape
 from tensorflow.python.platform import gfile
 from tensorflow.python.util import compat
+import time
 
 FLAGS = None
 
@@ -965,6 +966,7 @@ def add_jpeg_decoding(input_width, input_height, input_depth, input_mean,
 
 
 def main(_):
+
   # Needed to make sure the logging output is visible.
   # See https://github.com/tensorflow/tensorflow/issues/3047
   tf.logging.set_verbosity(tf.logging.INFO)
@@ -972,6 +974,7 @@ def main(_):
   # Prepare necessary directories  that can be used during training
   prepare_file_system()
 
+  start = time.perf_counter()
   # Gather information about the model architecture we'll be using.
   model_info = create_model_info(FLAGS.architecture)
   if not model_info:
@@ -982,7 +985,7 @@ def main(_):
   maybe_download_and_extract(model_info['data_url'])
   graph, bottleneck_tensor, resized_image_tensor = (
       create_model_graph(model_info))
-
+  
   # Look at the folder structure, and create lists of all the images.
   image_lists = create_image_lists(FLAGS.image_dir, FLAGS.testing_percentage,
                                    FLAGS.validation_percentage)
@@ -1048,6 +1051,7 @@ def main(_):
 
     # Run the training for as many cycles as requested on the command line.
     for i in range(FLAGS.how_many_training_steps):
+
       # Get a batch of input bottleneck values, either calculated fresh every
       # time with distortions applied, or from the cache stored on disk.
       if do_distort_images:
@@ -1065,6 +1069,7 @@ def main(_):
              FLAGS.architecture)
       # Feed the bottlenecks and ground truth into the graph, and run a training
       # step. Capture training summaries for TensorBoard with the `merged` op.
+      
       train_summary, _ = sess.run(
           [merged, train_step],
           feed_dict={bottleneck_input: train_bottlenecks,
@@ -1098,6 +1103,9 @@ def main(_):
         tf.logging.info('%s: Step %d: Validation accuracy = %.1f%% (N=%d)' %
                         (datetime.now(), i, validation_accuracy * 100,
                          len(validation_bottlenecks)))
+
+      elapsed = time.perf_counter() - start
+      print('Elapsed %.3f seconds.' % elapsed)
 
       # Store intermediate results
       intermediate_frequency = FLAGS.intermediate_store_frequency
@@ -1138,7 +1146,6 @@ def main(_):
     save_graph_to_file(sess, graph, FLAGS.output_graph)
     with gfile.FastGFile(FLAGS.output_labels, 'w') as f:
       f.write('\n'.join(image_lists.keys()) + '\n')
-
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
@@ -1324,3 +1331,4 @@ if __name__ == '__main__':
       """)
   FLAGS, unparsed = parser.parse_known_args()
   tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
+
