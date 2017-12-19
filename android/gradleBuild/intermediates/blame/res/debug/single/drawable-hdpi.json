@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "/Users/parshar2/Documents/AndroidStudioProjects/tensorflow/tensorflow/examples/android/gradleBuild/intermediates/res/merged/debug/drawable-hdpi/ic_launcher.png",
+        "source": "/Users/parshar2/Documents/AndroidStudioProjects/tensorflow/tensorflow/examples/android/res/drawable-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/parshar2/Documents/AndroidStudioProjects/tensorflow/tensorflow/examples/android/gradleBuild/intermediates/res/merged/debug/drawable-hdpi/tile.9.png",
+        "source": "/Users/parshar2/Documents/AndroidStudioProjects/tensorflow/tensorflow/examples/android/res/drawable-hdpi/tile.9.png"
+    },
+    {
+        "merged": "/Users/parshar2/Documents/AndroidStudioProjects/tensorflow/tensorflow/examples/android/gradleBuild/intermediates/res/merged/debug/drawable-hdpi/ic_action_info.png",
+        "source": "/Users/parshar2/Documents/AndroidStudioProjects/tensorflow/tensorflow/examples/android/res/drawable-hdpi/ic_action_info.png"
+    }
+]
